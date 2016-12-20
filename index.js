@@ -16,17 +16,19 @@ var dates = [{
     timestamp: [2017, 12, 21, 8, 27, 54, 306]
 }];
 
-// console.log(datePairs(dates));
 console.log(datePairs(dates).map((pair) => {
-  return revealBetween(pair[0].timestamp, pair[1].timestamp)
+    return {
+        name: pair[0].title,
+        segments: revealBetween(pair[0].timestamp, pair[1].timestamp)
+    }
 }));
 
 function datePairs(dates) {
-  var result = [];
-  for (var i = 0; i < dates.length - 1; i++) {
-    result.push([dates[i], dates[i + 1]])
-  }
-  return result;
+    var result = [];
+    for (var i = 0; i < dates.length - 1; i++) {
+        result.push([dates[i], dates[i + 1]])
+    }
+    return result;
 }
 
 function revealBetween(season1, season2) {
