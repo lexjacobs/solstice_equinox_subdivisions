@@ -156,7 +156,7 @@ var dates = [{
 
 var answer = datePairs(dates).map((pair) => {
   return {
-    season: pair[0].title,
+    season: pair[0].title + ' ' + pair[0].timestamp[0],
     segments: revealBetween(pair[0], pair[1]).map((segment) => {
       return '' + segment.segmentTitle + segment.segmentTime;
     })
