@@ -1,4 +1,4 @@
-var moment = require('moment');
+// var moment = require('moment');
 var dates = [{
     title: "Spring",
     timestamp: [2015, 3, 20, 15, 45, 8, 574]
@@ -165,15 +165,15 @@ var answer = datePairs(dates).map((pair) => {
 
 console.log(answer);
 
-// answer.forEach((period) => {
-//   $('.result').append(period.season);
-//   $('.result').append('<br>');
-//   period.segments.forEach((segment) => {
-//
-//     $('.result').append(segment)
-//     $('.result').append('<br>')
-//   })
-// })
+answer.forEach((period) => {
+  $('.result').append(period.season);
+  $('.result').append('<br>');
+  period.segments.forEach((segment) => {
+
+    $('.result').append(segment)
+    $('.result').append('<br>')
+  })
+})
 
 function datePairs(dates) {
   var result = [];
