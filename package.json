@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "compile": "browserify public/calculator.js -o public/bundle.js"
   },
   "author": "",
   "license": "ISC",
