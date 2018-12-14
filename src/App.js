@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { data } from './util/makeDivisions.js';
+console.log(data);
 
 class App extends Component {
 	render() {

@@ -1,8 +1,8 @@
 var express = require('express');
 var app = express();
 
-app.set('port', process.env.PORT || 3000);
+const PORT = process.env.PORT || 8000;
 
-app.use(express.static(__dirname + '/'));
+app.use(express.static(__dirname + '/build'));
 
-app.listen(app.get('port'));
+app.listen(PORT, () => console.log(`app listening on port ${PORT}`));
