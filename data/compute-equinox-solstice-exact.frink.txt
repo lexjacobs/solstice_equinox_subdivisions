@@ -1,0 +1,175 @@
+startyear=1970
+endyear=startyear+100
+
+// Secant method solver.
+//
+// This function finds a root of the function f.
+//  In other words, it returns the value of x for which f[x] = 0.
+//
+// The arguments are:
+//   f: A function that takes a single argument
+//   x1, x2:  initial guesses
+//   maxDelta:  the maximum error in x
+secant[f, x1, x2, maxDelta = 1e-14] :=
+{
+   f1 = f[x1]
+   f2 = f[x2]
+   while (true)
+   {
+      x = x1 - (f1 * (x1 - x2)) / (f1-f2)
+      println[x]
+
+      if abs[x - x1] < maxDelta
+         return x
+
+      x2 = x1
+      x1 = x
+      f2 = f1
+      f1 = f[x]
+   }
+}
+
+// This uses the secant method to invert the function y = f[x].
+// This will essentially find an inverse function for f[x] and return a value
+//  of x for which f[x] = y.
+//  other parameters:
+//   x1,x2:  initial guesses that hopefully bound the desired result.
+//   maxDelta:  maximum error in y
+
+//   TODO:  Use interval techniques to make this more rigorous and powerful?
+//   TODO:  Automatically make guesses for x1 and x2?  Somehow?
+secantInvert[f, y, x1, x2, maxDelta = 1e-14] :=
+{
+   y1 = f[x1]
+   y2 = f[x2]
+   while true
+   {
+      invSlope = (x2-x1)/(y2 - y1)
+      xnew = x1 + (y - y1) invSlope
+      ynew = f[xnew]
+//      println["ynew=$ynew\txnew= $xnew"]
+
+      if abs[ynew - y] < maxDelta
+         return xnew
+
+      y2 = y1
+      y1 = ynew
+      x2 = x1
+      x1 = xnew
+   }
+}
+
+// Minimize a function using the secant method.
+secantMinimize[f, xmin, xmax, minStepX] :=
+{
+   x1 = xmin
+   x2 = xmax
+   y1 = f[x1]
+   y2 = f[x2]
+   while true
+   {
+      println["x1=$x1\t x2=$x2"]
+      slope = (y2-y1)/(x2-x1)
+      xnew = x1 + slope (x1+x2)/2
+      ynew = f[xnew]
+      println["ynew=$ynew\txnew= $xnew"]
+
+      if (abs[x2-x1] < minStepX)
+         return ynew
+      
+      y2 = y1
+      y1 = ynew
+      x2 = x1
+      x1 = xnew
+      if x1 > x2
+         [x1, x2] = [x2, x1]
+      if x1 < xmin
+         x1 = xmin
+      if x2 > xmax
+         x2 = xmax
+   }
+}
+
+// Sample root-finding:
+//   Define a procedure block that represents the equation
+// (this is just a function without a name, or think of it
+//  as a reference to a function.)
+//f = { |x| ln[x] - 1}
+//println["Solution: " + secant[f, 1, 3]]
+
+
+// Sample inverse-finding:
+//   Find an inverse for the following function.
+//   The call below finds a value x such that log[x]=2
+//     in other words, calculates 10^2
+// f = { |x| log[x] }
+// println[secantInvert[f, 2, 1, 200, 1e-20]]
+
+
+/*
+   This program uses the full VSOP87 theory to calculate the exact dates
+   of the equinoxes and solstices to the nearest millisecond.  While the
+   sun.frink library has routines to calculate the solstices and equinoxes
+   rather simply, these can be inaccurate up to several minutes or so.
+
+   This program uses very high precision routines to calculate the solar
+   longitude of earth for each season, and uses a secant method solver to
+   obtain the exact time of the solstices and equinoxes to the nearest
+   millisecond.
+
+   The definition of the equinoxes and solstices are when earth's heliocentric
+   *longitude* is equal to 180 degrees (spring), 270 degrees (summer),
+   0 degrees (autumn), and 90 degrees (winter.)
+
+   The solstices are defined in terms of longitude, not latitude.  Thus, you
+   should be warned that the sun should be quite close to being over the
+   equator at equinoxes, and close to being at max/min latitude at solstices,
+   but these will not be exact.  Beware anyone who tells you differently.
+*/
+
+use planets.frink
+
+// Let's calculate the longitude angle that corresponds to 1 millisecond of
+// time
+angleres = ms circle/solaryear
+
+timezone = "US/Pacific"
+// Function to use planets.frink to calculate the heliocentric longitude
+// at the specified time.
+longfunc = {|date| highAccuracySunApparentLongitude[date]}
+
+for yearnum = startyear to endyear
+{
+   println[]
+   // These functions use the low-precision equinox/solstice functions from
+   // sun.frink to estimate a good starting point.   
+   springEquinox = secantInvert[longfunc,
+                                180 degrees,
+                                springEquinox[yearnum] - 1 hour,
+                                springEquinox[yearnum] + 1 hour,
+                                angleres]
+   println["Spring equinox is:   " + (springEquinox -> timezone)]
+
+
+   summerSolstice = secantInvert[longfunc,
+                                 270 degrees,
+                                 summerSolstice[yearnum] - 1 hour,
+                                 summerSolstice[yearnum] + 1 hour,
+                                 angleres]
+   println["Summer solstice is:  " + (summerSolstice -> timezone)]
+
+   autumnEquinox = secantInvert[longfunc,
+                                0 degrees,
+                                autumnEquinox[yearnum] - 1 hour,
+                                autumnEquinox[yearnum] + 1 hour,
+                                angleres]
+   println["Autumn equinox is:   " + (autumnEquinox -> timezone)]
+
+   winterSolstice = secantInvert[longfunc,
+                                 90 degrees,
+                                 winterSolstice[yearnum] - 1 hour,
+                                 winterSolstice[yearnum] + 1 hour,
+                                 angleres]
+
+   println["Winter solstice is:  " + (winterSolstice -> timezone)]
+}
