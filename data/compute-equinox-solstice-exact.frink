@@ -1,3 +1,5 @@
+// outputs JSON representation of exact UTC times of spring/summer/autumn/winter grouped by year
+
 startyear=1970
 endyear=startyear+100
 
@@ -133,14 +135,21 @@ use planets.frink
 // time
 angleres = ms circle/solaryear
 
-timezone = "US/Pacific"
+timezone = "UTC"
+timeformat = ### yyyy-MM-dd HH:mm:ss:S ###
+
 // Function to use planets.frink to calculate the heliocentric longitude
 // at the specified time.
 longfunc = {|date| highAccuracySunApparentLongitude[date]}
 
+// open JSON bracket
+println["{"]
+
 for yearnum = startyear to endyear
 {
-   println[]
+   // key of year
+   println["\"" + yearnum + "\": {"]
+
    // These functions use the low-precision equinox/solstice functions from
    // sun.frink to estimate a good starting point.   
    springEquinox = secantInvert[longfunc,
@@ -148,22 +157,22 @@ for yearnum = startyear to endyear
                                 springEquinox[yearnum] - 1 hour,
                                 springEquinox[yearnum] + 1 hour,
                                 angleres]
-   println["Spring equinox is:   " + (springEquinox -> timezone)]
 
+   println["\"spring\": \"" + (springEquinox -> [timeformat,timezone]) + "\","]
 
    summerSolstice = secantInvert[longfunc,
                                  270 degrees,
                                  summerSolstice[yearnum] - 1 hour,
                                  summerSolstice[yearnum] + 1 hour,
                                  angleres]
-   println["Summer solstice is:  " + (summerSolstice -> timezone)]
+   println["\"summer\": \"" + (summerSolstice -> [timeformat,timezone]) + "\","]
 
    autumnEquinox = secantInvert[longfunc,
                                 0 degrees,
                                 autumnEquinox[yearnum] - 1 hour,
                                 autumnEquinox[yearnum] + 1 hour,
                                 angleres]
-   println["Autumn equinox is:   " + (autumnEquinox -> timezone)]
+   println["\"autumn\": \"" + (autumnEquinox -> [timeformat,timezone]) + "\","]
 
    winterSolstice = secantInvert[longfunc,
                                  90 degrees,
@@ -171,5 +180,12 @@ for yearnum = startyear to endyear
                                  winterSolstice[yearnum] + 1 hour,
                                  angleres]
 
-   println["Winter solstice is:  " + (winterSolstice -> timezone)]
+   println["\"winter\": \"" + (winterSolstice -> [timeformat,timezone]) + "\""]
+   
+   // close year
+   println[yearnum != endyear ? "}," : "}"]
+
 }
+
+// close JSON object
+println["}"]
