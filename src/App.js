@@ -19,6 +19,11 @@ class App extends Component {
 			endYear: NOW.getFullYear()
 		};
 	}
+
+	componentDidMount() {
+		console.log(`guessing local time zone ${this.state.zone}`);
+	}
+
 	render() {
 		let renderData = this.state.data
 			.filter((x) => x.year >= this.state.startYear && x.year <= this.state.endYear)
@@ -118,6 +123,7 @@ class App extends Component {
 							}}
 							id="timezone"
 						>
+							<option value={moment.tz.guess()}>Current Detected</option>
 							<option value="US/Pacific">Pacific Time</option>
 							<option value="US/Mountain">Mountain Time</option>
 							<option value="US/Central">Central Time</option>
