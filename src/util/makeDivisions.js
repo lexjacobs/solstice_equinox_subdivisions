@@ -1,5 +1,10 @@
-const _ = require('lodash');
+// const _ = require('lodash');
 const moment = require('moment');
+
+const START = 1970;
+const END = 2070;
+const FORMAT = 'MMM DD YYYY HH:mm:ss:SSS Z';
+
 /* json object keyed by year with
 keys of spring/summer/autumn/winter  
 and values like "1970-03-21 00:56:18:602"
@@ -14,43 +19,90 @@ var seasonMap = {
 	3: 'winter'
 };
 
-/* subdivide by 64ths by unix ms timestamp and push into buckets by year and season 
-"1970": {
-    "spring": "1970-03-21 00:56:18:602",
-    "springBucket": [12343, 23123, 43214 ...],
-    "summer": "1970-06-21 19:42:38:132",
-    "summerBucket": [12343, 23123, 43214 ...],
-    "autumn": "1970-09-23 10:58:56:790",
-    "autumnBucket": [12343, 23123, 43214 ...],
-    "winter": "1970-12-22 06:35:39:229",
-    "winterBucket": [12343, 23123, 43214 ...]
-  },
-   */
+function spreadSeasonalObjectsIntoArray(allDates, start, end) {
+	// create result array
+	var result = [];
+	// from start (1970) -> end (2070)
+	for (var i = start; i <= end; i++) {
+		// add every seasonal time, tagged appropriately
+		for (var j = 0; j < Object.keys(seasonMap).length; j++) {
+			let season = allDates[i][seasonMap[j]];
+			result.push({
+				timestamp: season,
+				year: i,
+				season: seasonMap[j]
+			});
+		}
+	}
+	return result;
+}
 
-_.forEach(utcDates, (seasons, year) => {
-	// add season buckets
-	for (let s in seasonMap) {
-		utcDates[year][`${seasonMap[s]}Bucket`] = [];
+function calculateDivision64(n) {
+	var result = {
+		'64': true
+	};
+	if (n % 32 === 0) {
+		result['2'] = true;
+	}
+	if (n % 16 === 0) {
+		result['4'] = true;
+	}
+	if (n % 8 === 0) {
+		result['8'] = true;
+	}
+	if (n % 4 === 0) {
+		result['16'] = true;
+	}
+	if (n % 2 === 0) {
+		result['32'] = true;
+	}
+	if (n === 0) {
+		result['exactSeason'] = true;
 	}
 
-	// iterate from `var i = 0-3` to make pairs of 2 seasons (break on the last loop)
-	for (let i = 0; i < 4; i++) {
-		// grab seasonal pairs (i <--> i+1)
-		var season1 = seasons[seasonMap[i]];
-		var season2 = seasons[seasonMap[i + 1]];
-		// define ms start / end
-		var start = moment(season1).valueOf();
-		var end = moment(season2).valueOf();
+	return result;
+}
+
+/* 
+	dividedData ends up looking like this
+	{ "division": { "2": true, "4": true, "8": true, "16": true, "32": true, "64": true, "exactSeason": true }, "year": 1970, "season": "spring", "timestamp": "Mar 20 1970 16:56:18:602 -08:00" }
+	{ "division": { "64": true }, "year": 1970, "season": "spring", "timestamp": "Mar 22 1970 03:43:54:532 -08:00" }
+	{ "division": { "32": true, "64": true }, "year": 1970, "season": "spring", "timestamp": "Mar 23 1970 14:31:30:462 -08:00" }
+	{ "division": { "64": true }, "year": 1970, "season": "spring", "timestamp": "Mar 25 1970 01:19:06:392 -08:00" }
+	{ "division": { "16": true, "32": true, "64": true }, "year": 1970, "season": "spring", "timestamp": "Mar 26 1970 12:06:42:322 -08:00" }
+	{ "division": { "64": true }, "year": 1970, "season": "spring", "timestamp": "Mar 27 1970 22:54:18:252 -08:00" }
+	{ "division": { "32": true, "64": true }, "year": 1970, "season": "spring", "timestamp": "Mar 29 1970 09:41:54:182 -08:00" }
+*/
+
+function divideData(seasonsArray) {
+	var result = [];
+	for (var i = 0; i < seasonsArray.length - 1; i++) {
+		// grab seasonal pair objects (i <--> i+1)
+		var season1 = seasonsArray[i];
+		var season2 = seasonsArray[i + 1];
+
+		// define seasonal pair ms start / end
+		// TODO: make a moment.tz object for later parsing into different time zones
+		var start = moment(season1.timestamp).valueOf();
+		var end = moment(season2.timestamp).valueOf();
 
 		// define 64th of distance between start and end
 		var chunk = (end - start) / 64;
 
 		// push 64ths between pairs into buckets, inclusive of start / exclusive of end
-		let currentBucket = utcDates[year][`${seasonMap[i]}Bucket`];
 		for (let i = 0; i < 64; i++) {
-			currentBucket.push(moment(start + i * chunk).format('MMM DD YYYY HH:mm:ss:SSS Z'));
+			result.push({
+				division: calculateDivision64(i),
+				year: season1.year,
+				season: season1.season,
+				timestamp: moment(start + i * chunk).format(FORMAT)
+			});
 		}
 	}
-});
+	return result;
+}
 
-export const data = utcDates[2018];
+// console.timeEnd();
+const spreadData = spreadSeasonalObjectsIntoArray(utcDates, START, END);
+const dividedData = divideData(spreadData);
+export const data = dividedData;
