@@ -13,7 +13,7 @@ class App extends Component {
 		super(props);
 		this.state = {
 			data,
-			zone: 'US/Pacific',
+			zone: moment.tz.guess(),
 			division: '0',
 			startYear: NOW.getFullYear(),
 			endYear: NOW.getFullYear()
