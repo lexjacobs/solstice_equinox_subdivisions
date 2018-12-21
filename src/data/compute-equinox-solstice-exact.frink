@@ -136,7 +136,7 @@ use planets.frink
 angleres = ms circle/solaryear
 
 timezone = "UTC"
-timeformat = ### yyyy-MM-dd HH:mm:ss.S'Z' ###
+timeformat = ### yyyy-MM-dd HH:mm:ss.SSS'Z' ###
 
 // Function to use planets.frink to calculate the heliocentric longitude
 // at the specified time.
