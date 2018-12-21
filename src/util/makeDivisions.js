@@ -56,7 +56,7 @@ function calculateDivision64(n) {
 		result['32'] = true;
 	}
 	if (n === 0) {
-		result['0'] = true;
+		result['1'] = true;
 	}
 
 	return result;

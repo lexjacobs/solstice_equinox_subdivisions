@@ -6,7 +6,7 @@ const moment = require('moment-timezone');
 const NOW = new Date();
 const START_YEAR = 1970;
 const END_YEAR = 2070;
-const FORMAT = '**MMM DD, YYYY HH:mm:ss:SSS Z**';
+const FORMAT = 'MMM DD, YYYY HH:mm:ss:SSS Z';
 
 class App extends Component {
 	constructor(props) {
@@ -14,7 +14,7 @@ class App extends Component {
 		this.state = {
 			data,
 			zone: moment.tz.guess(),
-			division: '0',
+			division: '1',
 			startYear: NOW.getFullYear(),
 			endYear: NOW.getFullYear()
 		};
@@ -31,17 +31,30 @@ class App extends Component {
 				return Object.keys(x.division).includes(this.state.division);
 			})
 			.map((x, i) => {
-				return (
-					<div key={i}>
-						{`${x.season}, ${x.year} ${this.state.division === '0'
-							? ''
-							: '+ ' + i % this.state.division}${this.state.division === '0'
-							? ''
-							: '/' + this.state.division} ${moment.tz(x.timestamp, this.state.zone).format(FORMAT)}`}
-						<br />
-						<br />
-					</div>
-				);
+				// exact season
+				if (i % this.state.division === 0) {
+					return (
+						<div key={i}>
+							<b>{`${x.season.slice(0, 1).toUpperCase()}${x.season
+								.slice(1)
+								.toLowerCase()}, ${x.year}`}</b>
+							<pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT)}</pre>
+							<br />
+						</div>
+					);
+				} else {
+					// fractional division
+					return (
+						<div key={i}>
+							{`${x.season.slice(0, 1).toUpperCase()}${x.season
+								.slice(1)
+								.toLowerCase()}, ${x.year} ${'+ ' + i % this.state.division}${'/' +
+								this.state.division} `}
+							<pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT)}</pre>
+							<br />
+						</div>
+					);
+				}
 			});
 
 		var startYearOptions = [];
@@ -77,7 +90,7 @@ class App extends Component {
 							}}
 							id="season-division"
 						>
-							<option value="0">Exact</option>
+							<option value="1">Exact</option>
 							<option value="2">Halves</option>
 							<option value="4">Quarters</option>
 							<option value="8">Eighths</option>
