@@ -6,7 +6,8 @@ const moment = require('moment-timezone');
 const NOW = new Date();
 const START_YEAR = 1970;
 const END_YEAR = 2070;
-const FORMAT = 'MMM DD, YYYY HH:mm:ss:SSS Z';
+const FORMAT_DAY = 'ddd, MMM DD, YYYY';
+const FORMAT_TIME = 'HH:mm:ss.SSS (zz) Z';
 
 class App extends Component {
 	constructor(props) {
@@ -38,7 +39,8 @@ class App extends Component {
 							<b>{`${x.season.slice(0, 1).toUpperCase()}${x.season
 								.slice(1)
 								.toLowerCase()}, ${x.year}`}</b>
-							<pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT)}</pre>
+							<pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT_DAY)}</pre>
+							<pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT_TIME)}</pre>
 							<br />
 						</div>
 					);
@@ -50,7 +52,8 @@ class App extends Component {
 								.slice(1)
 								.toLowerCase()}, ${x.year} ${'+ ' + i % this.state.division}${'/' +
 								this.state.division} `}
-							<pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT)}</pre>
+							<pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT_DAY)}</pre>
+							<pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT_TIME)}</pre>
 							<br />
 						</div>
 					);
@@ -99,6 +102,25 @@ class App extends Component {
 							<option value="64">64ths</option>
 						</select>
 
+						<label htmlFor="timezone">Timezone: </label>
+						<select
+							onChange={(e) => {
+								this.setState({
+									zone: e.target.value
+								});
+							}}
+							id="timezone"
+						>
+							<option value={moment.tz.guess()}>Current Detected</option>
+							<option value="US/Pacific">Pacific Time</option>
+							<option value="US/Mountain">Mountain Time</option>
+							<option value="US/Central">Central Time</option>
+							<option value="US/Eastern">Eastern Time</option>
+							<option value="GMT">GMT</option>
+						</select>
+
+						<br />
+
 						<label htmlFor="start-year">Start: </label>
 						<select
 							value={this.state.startYear}
@@ -125,23 +147,6 @@ class App extends Component {
 							id="end-year"
 						>
 							{endYearOptions}
-						</select>
-
-						<label htmlFor="timezone">Timezone: </label>
-						<select
-							onChange={(e) => {
-								this.setState({
-									zone: e.target.value
-								});
-							}}
-							id="timezone"
-						>
-							<option value={moment.tz.guess()}>Current Detected</option>
-							<option value="US/Pacific">Pacific Time</option>
-							<option value="US/Mountain">Mountain Time</option>
-							<option value="US/Central">Central Time</option>
-							<option value="US/Eastern">Eastern Time</option>
-							<option value="GMT">GMT</option>
 						</select>
 					</nav>
 				</header>
