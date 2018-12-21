@@ -1,9 +1,8 @@
 // const _ = require('lodash');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 const START = 1970;
 const END = 2070;
-const FORMAT = 'MMM DD YYYY HH:mm:ss:SSS Z';
 
 /* json object keyed by year with
 keys of spring/summer/autumn/winter  
@@ -57,7 +56,7 @@ function calculateDivision64(n) {
 		result['32'] = true;
 	}
 	if (n === 0) {
-		result['exactSeason'] = true;
+		result['0'] = true;
 	}
 
 	return result;
@@ -83,8 +82,8 @@ function divideData(seasonsArray) {
 
 		// define seasonal pair ms start / end
 		// TODO: make a moment.tz object for later parsing into different time zones
-		var start = moment(season1.timestamp).valueOf();
-		var end = moment(season2.timestamp).valueOf();
+		var start = moment.utc(season1.timestamp).valueOf();
+		var end = moment.utc(season2.timestamp).valueOf();
 
 		// define 64th of distance between start and end
 		var chunk = (end - start) / 64;
@@ -95,7 +94,7 @@ function divideData(seasonsArray) {
 				division: calculateDivision64(i),
 				year: season1.year,
 				season: season1.season,
-				timestamp: moment(start + i * chunk).format(FORMAT)
+				timestamp: start + i * chunk
 			});
 		}
 	}

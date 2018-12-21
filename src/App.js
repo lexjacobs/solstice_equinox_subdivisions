@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import './App.css';
 import { data } from './util/makeDivisions.js';
+const moment = require('moment-timezone');
 
 const NOW = new Date();
 const START_YEAR = 1970;
 const END_YEAR = 2070;
+const FORMAT = '**MMM DD, YYYY HH:mm:ss:SSS Z**';
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			data,
-			timezone: null,
-			division: 'exactSeason',
+			zone: 'US/Pacific',
+			division: '0',
 			startYear: NOW.getFullYear(),
 			endYear: NOW.getFullYear()
 		};
@@ -23,13 +25,20 @@ class App extends Component {
 			.filter((x) => {
 				return Object.keys(x.division).includes(this.state.division);
 			})
-			.map((x, i) => (
-				<div key={i}>
-					{JSON.stringify(x, null, 4)}
-					<br />
-					<br />
-				</div>
-			));
+			.map((x, i) => {
+				console.log(x.timestamp.valueOf());
+				return (
+					<div key={i}>
+						{`${x.season}, ${x.year} ${this.state.division === '0'
+							? ''
+							: '+ ' + i % this.state.division}${this.state.division === '0'
+							? ''
+							: '/' + this.state.division} ${moment.tz(x.timestamp, this.state.zone).format(FORMAT)}`}
+						<br />
+						<br />
+					</div>
+				);
+			});
 
 		var startYearOptions = [];
 		for (let i = START_YEAR; i <= END_YEAR; i++) {
@@ -55,7 +64,7 @@ class App extends Component {
 				<header className="App-header">
 					Solstice Equinox Subdivisions
 					<nav>
-						<label htmlFor="season-division">Subdivide Seasons into:</label>
+						<label htmlFor="season-division">Subdivide: </label>
 						<select
 							onChange={(e) => {
 								this.setState({
@@ -64,7 +73,7 @@ class App extends Component {
 							}}
 							id="season-division"
 						>
-							<option value="exactSeason">Exact</option>
+							<option value="0">Exact</option>
 							<option value="2">Halves</option>
 							<option value="4">Quarters</option>
 							<option value="8">Eighths</option>
@@ -73,7 +82,7 @@ class App extends Component {
 							<option value="64">64ths</option>
 						</select>
 
-						<label htmlFor="start-year">Start year</label>
+						<label htmlFor="start-year">Start: </label>
 						<select
 							value={this.state.startYear}
 							id="start-year"
@@ -90,7 +99,7 @@ class App extends Component {
 						>
 							{startYearOptions}
 						</select>
-						<label htmlFor="end-year">End year</label>
+						<label htmlFor="end-year">End: </label>
 						<select
 							onChange={(e) => {
 								this.setState({ endYear: +e.target.value });
@@ -99,6 +108,22 @@ class App extends Component {
 							id="end-year"
 						>
 							{endYearOptions}
+						</select>
+
+						<label htmlFor="timezone">Timezone: </label>
+						<select
+							onChange={(e) => {
+								this.setState({
+									zone: e.target.value
+								});
+							}}
+							id="timezone"
+						>
+							<option value="US/Pacific">Pacific Time</option>
+							<option value="US/Mountain">Mountain Time</option>
+							<option value="US/Central">Central Time</option>
+							<option value="US/Eastern">Eastern Time</option>
+							<option value="GMT">GMT</option>
 						</select>
 					</nav>
 				</header>
