@@ -26,7 +26,6 @@ class App extends Component {
 				return Object.keys(x.division).includes(this.state.division);
 			})
 			.map((x, i) => {
-				console.log(x.timestamp.valueOf());
 				return (
 					<div key={i}>
 						{`${x.season}, ${x.year} ${this.state.division === '0'
