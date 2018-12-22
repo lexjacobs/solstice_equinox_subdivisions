@@ -1,0 +1,24 @@
+main {
+  margin: 20px 0;
+}
+
+select {
+  display: block;
+  margin: 10px auto;
+}
+
+@media screen and (min-width: 900px) {
+  main {
+    margin: 20px 0;
+  }
+
+  select {
+    display: inline-block;
+    margin: 0 20px;
+  }
+
+  label {
+    position: relative;
+    top: 2px;
+  }
+}

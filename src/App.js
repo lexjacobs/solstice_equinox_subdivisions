@@ -41,7 +41,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          Solstice Equinox Subdivisions
+          <h1>Solstice Equinox Subdivisions</h1>
           <HeaderSelectors
             startYear={this.state.startYear}
             endYear={this.state.endYear}

@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment-timezone';
+import './HeaderSelectors.css';
 
 const START_YEAR = 1970;
 const END_YEAR = 2070;
