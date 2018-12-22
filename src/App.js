@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import './App.css';
 import { data } from './util/makeDivisions.js';
 import { AverageGap } from './AverageGap';
+import { Segments } from './Segments';
 const moment = require('moment-timezone');
 
 const NOW = new Date();
 const START_YEAR = 1970;
 const END_YEAR = 2070;
-const FORMAT_DAY = 'ddd, MMM DD, YYYY';
-const FORMAT_TIME = 'HH:mm:ss.SSS (zz) Z';
 
 class App extends Component {
   constructor(props) {
@@ -32,31 +31,6 @@ class App extends Component {
       .filter((x) => {
         return Object.keys(x.division).includes(this.state.division);
       });
-
-    let renderData = dataSegment.map((x, i) => {
-      // exact season
-      if (i % this.state.division === 0) {
-        return (
-          <div key={i}>
-            <b>{`${x.season.slice(0, 1).toUpperCase()}${x.season.slice(1).toLowerCase()}, ${x.year}`}</b>
-            <pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT_DAY)}</pre>
-            <pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT_TIME)}</pre>
-            <br />
-          </div>
-        );
-      } else {
-        // fractional division
-        return (
-          <div key={i}>
-            {`${x.season.slice(0, 1).toUpperCase()}${x.season.slice(1).toLowerCase()}, ${x.year} ${'+ ' +
-              i % this.state.division}${'/' + this.state.division} `}
-            <pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT_DAY)}</pre>
-            <pre>{moment.tz(x.timestamp, this.state.zone).format(FORMAT_TIME)}</pre>
-            <br />
-          </div>
-        );
-      }
-    });
 
     var startYearOptions = [];
     for (let i = START_YEAR; i <= END_YEAR; i++) {
@@ -148,7 +122,7 @@ class App extends Component {
           </nav>
         </header>
         <AverageGap data={dataSegment} division={this.state.division} />
-        <main>{renderData}</main>
+        <Segments data={dataSegment} division={this.state.division} zone={this.state.zone} />
       </div>
     );
   }
