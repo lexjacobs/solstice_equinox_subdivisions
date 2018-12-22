@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import { data } from './util/makeDivisions.js';
+import { AverageGap } from './AverageGap';
 const moment = require('moment-timezone');
 
 const NOW = new Date();
@@ -8,31 +9,6 @@ const START_YEAR = 1970;
 const END_YEAR = 2070;
 const FORMAT_DAY = 'ddd, MMM DD, YYYY';
 const FORMAT_TIME = 'HH:mm:ss.SSS (zz) Z';
-
-const Period = (props) => {
-  let totalDiff = 0;
-  for (let i = 0; i < props.data.length - 1; i++) {
-    let curr = props.data[i].timestamp;
-    let next = props.data[i + 1].timestamp;
-    totalDiff += next - curr;
-  }
-  let aveDiff = totalDiff / (props.data.length - 1);
-  let period, segment;
-  if (+props.division >= 1 && +props.division <= 32) {
-    period = moment.duration(aveDiff).asDays();
-    segment = 'day';
-  } else {
-    period = moment.duration(aveDiff).asHours();
-    segment = 'hour';
-  }
-
-  return (
-    <div>
-      <br />
-      Average difference between periods: {Math.round(period * 1000) / 1000} {segment}s
-    </div>
-  );
-};
 
 class App extends Component {
   constructor(props) {
@@ -171,7 +147,7 @@ class App extends Component {
             </select>
           </nav>
         </header>
-        <Period data={dataSegment} division={this.state.division} />
+        <AverageGap data={dataSegment} division={this.state.division} />
         <main>{renderData}</main>
       </div>
     );
