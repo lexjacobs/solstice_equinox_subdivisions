@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import './App.css';
 import { data } from './util/makeDivisions.js';
 import { AverageGap } from './AverageGap';
+import { HeaderSelectors } from './HeaderSelectors';
 import { Segments } from './Segments';
 const moment = require('moment-timezone');
 
 const NOW = new Date();
-const START_YEAR = 1970;
-const END_YEAR = 2070;
 
 class App extends Component {
   constructor(props) {
@@ -25,29 +24,17 @@ class App extends Component {
     console.log(`guessing local time zone ${this.state.zone}`);
   }
 
-  render() {
-    let dataSegment = this.state.data
-      .filter((x) => x.year >= this.state.startYear && x.year <= this.state.endYear)
-      .filter((x) => {
-        return Object.keys(x.division).includes(this.state.division);
-      });
+  handleOptionChange(key, val) {
+    this.setState({ [key]: val });
+  }
 
-    var startYearOptions = [];
-    for (let i = START_YEAR; i <= END_YEAR; i++) {
-      startYearOptions.push(
-        <option key={i} value={i}>
-          {i}
-        </option>
-      );
-    }
-    var endYearOptions = [];
-    for (let i = this.state.startYear; i <= END_YEAR; i++) {
-      endYearOptions.push(
-        <option key={i} value={i}>
-          {i}
-        </option>
-      );
-    }
+  render() {
+    let dataSegment = this.state.data.filter(
+      (x) =>
+        x.year >= this.state.startYear &&
+        x.year <= this.state.endYear &&
+        Object.keys(x.division).includes(this.state.division)
+    );
 
     // { "division": { "2": true, "4": true, "8": true, "16": true, "32": true, "64": true, "exactSeason": true ...
 
@@ -55,71 +42,11 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           Solstice Equinox Subdivisions
-          <nav>
-            <label htmlFor="season-division">Subdivide: </label>
-            <select
-              onChange={(e) => {
-                this.setState({
-                  division: e.target.value
-                });
-              }}
-              id="season-division"
-            >
-              <option value="1">Exact</option>
-              <option value="2">Halves</option>
-              <option value="4">Quarters</option>
-              <option value="8">Eighths</option>
-              <option value="16">16ths</option>
-              <option value="32">32nds</option>
-              <option value="64">64ths</option>
-            </select>
-
-            <label htmlFor="timezone">Timezone: </label>
-            <select
-              onChange={(e) => {
-                this.setState({
-                  zone: e.target.value
-                });
-              }}
-              id="timezone"
-            >
-              <option value={moment.tz.guess()}>Current Detected ({moment.tz(moment.tz.guess()).format('z')})</option>
-              <option value="US/Pacific">Pacific Time</option>
-              <option value="US/Mountain">Mountain Time</option>
-              <option value="US/Central">Central Time</option>
-              <option value="US/Eastern">Eastern Time</option>
-              <option value="GMT">GMT</option>
-            </select>
-
-            <br />
-
-            <label htmlFor="start-year">Start: </label>
-            <select
-              value={this.state.startYear}
-              id="start-year"
-              onChange={(e) => {
-                e.persist();
-                this.setState(() => {
-                  return {
-                    startYear: +e.target.value,
-                    endYear: this.state.endYear < +e.target.value ? +e.target.value : this.state.endYear
-                  };
-                });
-              }}
-            >
-              {startYearOptions}
-            </select>
-            <label htmlFor="end-year">End: </label>
-            <select
-              onChange={(e) => {
-                this.setState({ endYear: +e.target.value });
-              }}
-              value={this.state.endYear}
-              id="end-year"
-            >
-              {endYearOptions}
-            </select>
-          </nav>
+          <HeaderSelectors
+            startYear={this.state.startYear}
+            endYear={this.state.endYear}
+            onSelectChange={(key, val) => this.handleOptionChange(key, val)}
+          />
         </header>
         <AverageGap data={dataSegment} division={this.state.division} />
         <Segments data={dataSegment} division={this.state.division} zone={this.state.zone} />
