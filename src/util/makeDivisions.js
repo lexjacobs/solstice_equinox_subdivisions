@@ -12,54 +12,54 @@ const utcDates = require('../data/solstice_equinox_1970_2070_UTC.json');
 
 // map seasons to integer
 var seasonMap = {
-	0: 'spring',
-	1: 'summer',
-	2: 'autumn',
-	3: 'winter'
+  0: 'spring',
+  1: 'summer',
+  2: 'autumn',
+  3: 'winter'
 };
 
 function spreadSeasonalObjectsIntoArray(allDates, start, end) {
-	// create result array
-	var result = [];
-	// from start (1970) -> end (2070)
-	for (var i = start; i <= end; i++) {
-		// add every seasonal time, tagged appropriately
-		for (var j = 0; j < Object.keys(seasonMap).length; j++) {
-			let season = allDates[i][seasonMap[j]];
-			result.push({
-				timestamp: season,
-				year: i,
-				season: seasonMap[j]
-			});
-		}
-	}
-	return result;
+  // create result array
+  var result = [];
+  // from start (1970) -> end (2070)
+  for (var i = start; i <= end; i++) {
+    // add every seasonal time, tagged appropriately
+    for (var j = 0; j < Object.keys(seasonMap).length; j++) {
+      let season = allDates[i][seasonMap[j]];
+      result.push({
+        timestamp: season,
+        year: i,
+        season: seasonMap[j]
+      });
+    }
+  }
+  return result;
 }
 
 function calculateDivision64(n) {
-	var result = {
-		'64': true
-	};
-	if (n % 32 === 0) {
-		result['2'] = true;
-	}
-	if (n % 16 === 0) {
-		result['4'] = true;
-	}
-	if (n % 8 === 0) {
-		result['8'] = true;
-	}
-	if (n % 4 === 0) {
-		result['16'] = true;
-	}
-	if (n % 2 === 0) {
-		result['32'] = true;
-	}
-	if (n === 0) {
-		result['1'] = true;
-	}
+  var result = {
+    '64': true
+  };
+  if (n % 32 === 0) {
+    result['2'] = true;
+  }
+  if (n % 16 === 0) {
+    result['4'] = true;
+  }
+  if (n % 8 === 0) {
+    result['8'] = true;
+  }
+  if (n % 4 === 0) {
+    result['16'] = true;
+  }
+  if (n % 2 === 0) {
+    result['32'] = true;
+  }
+  if (n === 0) {
+    result['1'] = true;
+  }
 
-	return result;
+  return result;
 }
 
 /* 
@@ -74,31 +74,31 @@ function calculateDivision64(n) {
 */
 
 function divideData(seasonsArray) {
-	var result = [];
-	for (var i = 0; i < seasonsArray.length - 1; i++) {
-		// grab seasonal pair objects (i <--> i+1)
-		var season1 = seasonsArray[i];
-		var season2 = seasonsArray[i + 1];
+  var result = [];
+  for (var i = 0; i < seasonsArray.length - 1; i++) {
+    // grab seasonal pair objects (i <--> i+1)
+    var season1 = seasonsArray[i];
+    var season2 = seasonsArray[i + 1];
 
-		// define seasonal pair ms start / end
-		// TODO: make a moment.tz object for later parsing into different time zones
-		var start = moment.utc(season1.timestamp).valueOf();
-		var end = moment.utc(season2.timestamp).valueOf();
+    // define seasonal pair ms start / end
+    // TODO: make a moment.tz object for later parsing into different time zones
+    var start = moment.utc(season1.timestamp).valueOf();
+    var end = moment.utc(season2.timestamp).valueOf();
 
-		// define 64th of distance between start and end
-		var chunk = (end - start) / 64;
+    // define 64th of distance between start and end
+    var chunk = (end - start) / 64;
 
-		// push 64ths between pairs into buckets, inclusive of start / exclusive of end
-		for (let i = 0; i < 64; i++) {
-			result.push({
-				division: calculateDivision64(i),
-				year: season1.year,
-				season: season1.season,
-				timestamp: start + i * chunk
-			});
-		}
-	}
-	return result;
+    // push 64ths between pairs into buckets, inclusive of start / exclusive of end
+    for (let i = 0; i < 64; i++) {
+      result.push({
+        division: calculateDivision64(i),
+        year: season1.year,
+        season: season1.season,
+        timestamp: start + i * chunk
+      });
+    }
+  }
+  return result;
 }
 
 // console.timeEnd();
