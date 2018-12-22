@@ -133,7 +133,7 @@ class App extends Component {
               }}
               id="timezone"
             >
-              <option value={moment.tz.guess()}>Current Detected</option>
+              <option value={moment.tz.guess()}>Current Detected ({moment.tz(moment.tz.guess()).format('z')})</option>
               <option value="US/Pacific">Pacific Time</option>
               <option value="US/Mountain">Mountain Time</option>
               <option value="US/Central">Central Time</option>
