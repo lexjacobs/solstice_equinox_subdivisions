@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/solstice_equinox_subdivisions/static/css/main.2c5bc0f5.chunk.css",
+    "main.js": "/solstice_equinox_subdivisions/static/js/main.a8133487.chunk.js",
+    "main.js.map": "/solstice_equinox_subdivisions/static/js/main.a8133487.chunk.js.map",
+    "runtime-main.js": "/solstice_equinox_subdivisions/static/js/runtime-main.ebaf4eaf.js",
+    "runtime-main.js.map": "/solstice_equinox_subdivisions/static/js/runtime-main.ebaf4eaf.js.map",
+    "static/js/2.a3027119.chunk.js": "/solstice_equinox_subdivisions/static/js/2.a3027119.chunk.js",
+    "static/js/2.a3027119.chunk.js.map": "/solstice_equinox_subdivisions/static/js/2.a3027119.chunk.js.map",
+    "index.html": "/solstice_equinox_subdivisions/index.html",
+    "precache-manifest.19c8297f262b7ee8ab95a22bb453e56c.js": "/solstice_equinox_subdivisions/precache-manifest.19c8297f262b7ee8ab95a22bb453e56c.js",
+    "service-worker.js": "/solstice_equinox_subdivisions/service-worker.js",
+    "static/css/main.2c5bc0f5.chunk.css.map": "/solstice_equinox_subdivisions/static/css/main.2c5bc0f5.chunk.css.map",
+    "static/js/2.a3027119.chunk.js.LICENSE.txt": "/solstice_equinox_subdivisions/static/js/2.a3027119.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.ebaf4eaf.js",
+    "static/js/2.a3027119.chunk.js",
+    "static/css/main.2c5bc0f5.chunk.css",
+    "static/js/main.a8133487.chunk.js"
+  ]
+}
