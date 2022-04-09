@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/solstice_equinox_subdivisions/precache-manifest.19c8297f262b7ee8ab95a22bb453e56c.js"
+  "/solstice_equinox_subdivisions/precache-manifest.767c2a62bebcc010278080039e59c5e4.js"
 );
 
 self.addEventListener('message', (event) => {
